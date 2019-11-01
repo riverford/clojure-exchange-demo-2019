@@ -9,6 +9,7 @@ npm-debug.*
 *.orig.*
 web-build/
 web-report/
-
+target
+.shadow-cljs
 # macOS
 .DS_Store

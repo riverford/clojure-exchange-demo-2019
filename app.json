@@ -2,6 +2,7 @@
   "expo": {
     "name": "Clojure Exchange Demo 2019",
     "slug": "clojure-exchange-demo-2019",
+    "entryPoint": "./target/index.js",
     "privacy": "public",
     "sdkVersion": "35.0.0",
     "platforms": [
