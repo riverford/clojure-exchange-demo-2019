@@ -1,9 +1,11 @@
 {:source-paths ["src"]
- :dependencies [[lilactown/hx "0.5.3"]]
+ :dependencies [[lilactown/hx "0.5.3"]
+                [cljs-bean "1.5.0"]]
  :builds
  {:app
   {:target :react-native
    :init-fn clojure-exchange-demo-2019.entry-point/init
    :output-dir "target"
    :compiler-options {:infer-externs :auto}
-   :devtools {:autoload true}}}}
+   :devtools {:autoload true
+              :preloads [shadow.remote.runtime.cljs.browser]}}}}
