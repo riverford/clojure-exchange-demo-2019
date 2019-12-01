@@ -24,10 +24,9 @@
 (defn useDiary
   "Not ideal storing this all in one lot, but just a demo"
   []
-  (let [[diary setDiary] (async-storage/useAsyncStorage {:k "diary"})]
+  (let [[diary setDiary] (async-storage/useAsyncStorage {:k "diary2"})]
     {:diary diary
      :record-dream (fn [dream]
-                     (println dream)
                      (setDiary (conj (or diary []) dream)))}))
 
 (defnc HelpButtonOverlay
@@ -77,10 +76,7 @@
   [rn/View {:style [:aic :fg1]}
    [rn/Text {:style (s [:ui1 :f3 :tc :pb3])}
     "Dream Diary"]
-   [rn/View {:style (s [:pb2 :aic :jcc])}
-    [Ionicons {:name "ios-cloudy-night"
-               :size 150
-               :style (s [:ui1])}]]])
+   ])
 
 (defn format-date
   "Formats a date & time using date-fns"
@@ -126,8 +122,6 @@
         [rn/View {:style (s [:aic :pb6 :jcc])}
          [b/TextButton2
           {:onPress (fn []
-                      (println record-dream)
-                      (println state)
                       (record-dream state)
                       (.goBack navigation))
            :text "Save Dream"}]]]
@@ -137,7 +131,11 @@
 (defnc EmptyState
   []
   [rn/View {:style (s [:jcc :aic])}
-   [rn/Text {:style (s [:ui1 :f4 :tc])}
+   [rn/View {:style (s [:pb2 :aic :jcc])}
+    [Ionicons {:name "ios-cloudy-night"
+               :size 150
+               :style (s [:ui1])}]]
+   [rn/Text {:style (s [:ui1 :f4 :tc :pb1])}
     "No dreams yet?"]
    [rn/Text {:style (s [:ui1 :f5 :tc])}
     "Crack out the cocoa, \n it's time for a good old snooze..."]])
@@ -157,16 +155,20 @@
 (defnc DreamsList
   []
   (let [{:keys [diary]} (react/useContext diary-context)]
-    (println "rendering dreamslist")
-    [rn/ScrollView
-     (for [dream (some-> diary rseq)]
-       [Dream dream])]))
+    [rn/FlatList
+     {:showsVerticalScrollIndicator false
+      :keyExtractor (fn [item]
+                      (let [{:keys [recorded-at]} (->clj item)]
+                        (str recorded-at)))
+      :data (some-> diary rseq to-array)
+      :renderItem (fn [^js obj]
+                    (let [{:keys [item]} (->clj obj)]
+                      (hx/f [Dream item])))}]))
 
 (defnc Diary
   [props]
   (let [insets (useSafeArea)
         {:keys [diary]} (react/useContext diary-context)]
-    (println "rendering diary")
     [rn/View {:style (merge (s [:absolute-fill :bg-brand0 :ph2])
                             {:paddingTop (.-top insets)})}
      [DreamHeader]
