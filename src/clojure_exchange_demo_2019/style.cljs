@@ -19,6 +19,7 @@
    :aic {:alignItems "center"}
    :aife {:alignItems "flex-end"}
    :jcc {:justifyContent "center"}
+   :jcfs {:justifyContent "flex-start"}
    :jcfe {:justifyContent "flex-end"}
    :jcsb {:justifyContent "space-between"}
    :jcsa {:justifyContent "space-around"}
@@ -150,7 +151,8 @@
 
 (defn border-radius
   "Border radius properties
-   br0 ... br5            borderRadius: 0|0.125|0.25|0.5|1]2 rem"
+   br0 ... br5            borderRadius: 0|0.125|0.25|0.5|1]2 rem
+   br50                   borderRadius: 50%"
   [opts]
   (let [{:keys [rem]} opts
         scale [["0" 0]
@@ -159,7 +161,7 @@
                ["3" 0.5]
                ["4" 1]
                ["5" 2]]]
-    (into {}
+    (into {:br50 {:borderRadius "50%"}}
           (for [[s fac] scale]
             [(kwd :br s) {:borderRadius (int (* fac rem))}]))))
 

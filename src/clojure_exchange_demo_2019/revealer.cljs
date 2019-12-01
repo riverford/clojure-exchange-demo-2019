@@ -35,17 +35,17 @@
                  (fn [^js ref]
                    (js/setTimeout
                      (fn []
-                       (.measureLayout
-                         (.-current ref)
-                         (rn/findNodeHandle (.-current inner))
-                         (fn [x y]
-                           (.scrollTo (.getNode (.-current outer)) #js {:y (max (- y reveal-offset) 0)
-                                                                        :animated true}))))
+                       (when-let [r (.-current ref)]
+                         (.measureLayout
+                           r
+                           (rn/findNodeHandle (.-current inner))
+                           (fn [x y]
+                             (.scrollTo (.getNode (.-current outer)) #js {:y (max (- y reveal-offset) 0)
+                                                                          :animated true})))))
                      200)))
         keyboard-padding (react/useRef (AnimatedValue. 0))]
     (hooks/useEffect
       (fn []
-        (println "animating" visible)
         (let [anim (animated-timing
                      (.-current keyboard-padding)
                      #js {:toValue (if visible keyboard/keyboard-height 0)
@@ -68,13 +68,37 @@
        {:style {:height (.-current keyboard-padding)}}]]]))
 
 ;; This text input will reveal itself
-(defnc RevealingTextInput
+(defnc TextInput
   [props]
   (let [{:keys [onFocus]} props
         reveal (react/useContext context)
         ref (react/useRef)]
     [rn/TextInput
      (merge
+       {:underlineColorAndroid "transparent"
+        :autoCorrect false
+        :autoCapitalize "none"
+        :style (s [:br1 :ui0 :bg-ui1 :pa2 :f4 :w100])}
+       props
+       {:ref ref
+        :onFocus (fn [e]
+                   (reveal ref)
+                   (when onFocus
+                     (onFocus e)))})]))
+
+(defnc MultilineTextInput
+  [props]
+  (let [{:keys [onFocus]} props
+        reveal (react/useContext context)
+        ref (react/useRef)]
+    [rn/TextInput
+     (merge
+       {:underlineColorAndroid "transparent"
+        :autoCorrect false
+        :multiline true
+        :numberOfLines 20
+        :autoCapitalize "none"
+        :style (s [:br1 :h10 :ui0 :bg-ui1 :pa2 :f4 :w100])}
        props
        {:ref ref
         :onFocus (fn [e]

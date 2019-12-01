@@ -19,10 +19,8 @@
                     (.dismiss Keyboard)
                     (setVisible false)))
         onShow (react/useCallback (fn [^js e]
-                                    (println "showing")
                                     (setVisible true)))
         onHide (react/useCallback (fn [_]
-                                    (println "hiding")
                                     (setVisible false)))]
     (hooks/useEffect
       (fn []
