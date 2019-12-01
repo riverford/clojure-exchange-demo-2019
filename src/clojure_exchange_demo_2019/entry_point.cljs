@@ -144,12 +144,12 @@
   [props]
   (let [{:keys [recorded-at content analysis]} props]
     [rn/View
-     [rn/Text {:style (s [:ui1 :f6 :pb2 :fwb])}
+     [rn/Text {:style (s [:ui1 :f5 :pb2 :fwb])}
       (format-date recorded-at)]
      [rn/View {:style (s [:pl2 :pb4])}
-      [rn/Text {:style (s [:ui1 :f6 :pb2])}
+      [rn/Text {:style (s [:ui1 :f5 :pb2])}
        content]
-      [rn/Text  {:style (s [:ui1 :f6])}
+      [rn/Text  {:style (s [:ui1 :f5])}
        analysis]]]))
 
 (defnc DreamsList
