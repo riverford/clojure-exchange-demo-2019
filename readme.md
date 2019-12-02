@@ -1,6 +1,6 @@
 # React native / Cljs demo
 
-[icon](https://raw.githubusercontent.com/riverford/clojure-exchange-demo-2019/master/assets/icon.png)
+<img src="https://raw.githubusercontent.com/riverford/clojure-exchange-demo-2019/master/assets/icon.png" width=200/>
 
 ## Dev
 * `shadow-cljs watch app`
