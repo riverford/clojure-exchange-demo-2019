@@ -323,8 +323,8 @@
 ;; example usage
 (def s (init
          {:palette {:ui0 "#333344"
-                    :ui1 "#FFFFEE"
-                    :brand0 "#551199"
+                    :ui1 "#DDDDCC"
+                    :brand0 "#222244"
                     :status0 "#5b9851"
                     :status1 "#f5a623"
                     :status2 "#b5071c"}

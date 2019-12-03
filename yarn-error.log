@@ -1,5 +1,5 @@
 Arguments: 
-  /Users/danielneal/.nvm/versions/node/v8.15.1/bin/node /Users/danielneal/.yarn/bin/yarn.js add dates-fns
+  /Users/danielneal/.nvm/versions/node/v8.15.1/bin/node /Users/danielneal/.yarn/bin/yarnpkg add react-natiev-gesture-handler
 
 PATH: 
   /usr/local/opt/postgresql@9.6/bin:/Users/danielneal/.yarn/bin:/Users/danielneal/.config/yarn/global/node_modules/.bin:/Users/danielneal/.nvm/versions/node/v8.15.1/bin:/Users/danielneal/.local/bin:/Users/danielneal/Library/Android/sdk/platform-tools:/Users/danielneal/Library/Android/sdk/emulator:/Users/danielneal/Library/Android/sdk:/Library/Java/JavaVirtualMachines/jdk1.8.0_131.jdk/Contents/Home/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/MacGPG2/bin:/opt/X11/bin
@@ -14,7 +14,7 @@ Platform:
   darwin x64
 
 Trace: 
-  Error: https://registry.yarnpkg.com/dates-fns: Not found
+  Error: https://registry.yarnpkg.com/react-natiev-gesture-handler: Not found
       at Request.params.callback [as _callback] (/Users/danielneal/.yarn/lib/cli.js:66091:18)
       at Request.self.callback (/Users/danielneal/.yarn/lib/cli.js:129590:22)
       at emitTwo (events.js:126:13)
@@ -41,6 +41,7 @@ npm manifest:
       "@react-navigation/core": "^5.0.0-alpha.25",
       "@react-navigation/native": "^5.0.0-alpha.16",
       "@react-navigation/stack": "^5.0.0-alpha.37",
+      "date-fns": "^2.8.1",
       "expo": "^35.0.0",
       "react": "16.8.3",
       "react-dom": "16.8.3",
@@ -1790,6 +1791,11 @@ Lockfile:
     dependencies:
       hyphenate-style-name "^1.0.2"
       isobject "^3.0.1"
+  
+  date-fns@^2.8.1:
+    version "2.8.1"
+    resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.8.1.tgz#2109362ccb6c87c3ca011e9e31f702bc09e4123b"
+    integrity sha512-EL/C8IHvYRwAHYgFRse4MGAPSqlJVlOrhVYZ75iQBKrnv+ZedmYsgwH3t+BCDuZDXpoo07+q9j4qgSSOa7irJg==
   
   debounce@^1.2.0:
     version "1.2.0"

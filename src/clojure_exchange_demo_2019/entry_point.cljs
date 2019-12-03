@@ -9,11 +9,12 @@
    [clojure-exchange-demo-2019.async-storage :as async-storage]
    [clojure-exchange-demo-2019.dream-questions :as q]
    [cljs-bean.core :refer [->clj]]
+   ["react-native-gesture-handler/Swipeable" :default Swipeable]
    ["date-fns" :as d]
    ["@expo/vector-icons" :refer [Entypo Ionicons]]
    ["react" :as react]
    ["react-native" :as rn]
-   ["@react-navigation/core" :refer [useNavigation]]
+   ["@react-navigation/core" :refer [useNavigation useRoute]]
    ["@react-navigation/native" :refer [NavigationNativeContainer]]
    ["@react-navigation/stack" :refer [createStackNavigator]]
    ["react-native-safe-area-context" :refer [useSafeArea]]))
@@ -24,10 +25,18 @@
 (defn useDiary
   "Not ideal storing this all in one lot, but just a demo"
   []
-  (let [[diary setDiary] (async-storage/useAsyncStorage {:k "diary2"})]
+  (let [[diary setDiary] (async-storage/useAsyncStorage {:k "diary3"})]
     {:diary diary
      :record-dream (fn [dream]
-                     (setDiary (conj (or diary []) dream)))}))
+                     (setDiary (conj (or diary []) dream)))
+     :remove-dream (fn [dream]
+                     (setDiary (into [] (remove #(= % dream)) diary)))
+     :edit-dream (fn [dream]
+                   (setDiary (mapv (fn [x]
+                                     (if (= (:recorded-at x)
+                                            (:recorded-at dream))
+                                       dream
+                                       x)) diary)))}))
 
 (defnc HelpButtonOverlay
   []
@@ -75,58 +84,85 @@
   []
   [rn/View {:style [:aic :fg1]}
    [rn/Text {:style (s [:ui1 :f3 :tc :pb3])}
-    "Dream Diary"]
-   ])
+    "Dream Diary"]])
 
 (defn format-date
   "Formats a date & time using date-fns"
   [d]
   (d/format d "do MMMM yyyy HH':'mm"))
 
+(defnc DreamForm
+  [props]
+  (let [{:keys [dream onSubmit]} props
+        [dreamState setDreamState] (react/useState (or dream
+                                                       {:recorded-at (js/Date.)
+                                                        :content ""
+                                                        :analysis ""}))
+        {:keys [recorded-at content analysis]} dreamState]
+    [r/Revealer {:style (s [:ph2 :pv3])}
+     [rn/Text {:style (s [:ui1 :f4 :pb2])}
+      "Date recorded"]
+     [rn/Text {:style (s [:ui1 :fwb :f5 :pb3])}
+      (format-date recorded-at)]
+     [rn/Text {:style (s [:ui1 :f4 :pb2])}
+      "Dream content"]
+     [rn/View {:style (s [:pb5])}
+      [r/MultilineTextInput
+       {:numberOfLines 10
+        :multiline true
+        :defaultValue content
+        :onChangeText (fn [text]
+                        (setDreamState (fn [state]
+                                         (assoc state :content text))))}]]
+     [rn/Text {:style (s [:ui1 :f4 :pb2])}
+      "Dream analysis"]
+     [rn/View {:style (s [:pb5])}
+      [r/MultilineTextInput
+       {:numberOfLines 10
+        :multiline true
+        :defaultValue analysis
+        :onChangeText (fn [text]
+                        (setDreamState (fn [state]
+                                         (assoc state :analysis text))))}]]
+     [rn/View {:style (s [:aic :pb6 :jcc])}
+      [b/TextButton
+       {:onPress (fn []
+                   (onSubmit dreamState))
+        :text "Save Dream"}]]]))
+
 (defnc AddDream
   []
   (let [insets (useSafeArea)
-        [state setState] (react/useState {:recorded-at (js/Date.)
-                                          :content ""
-                                          :analysis ""})
         {:keys [diary record-dream]} (react/useContext diary-context)
         navigation (useNavigation)]
-    (let [{:keys [recorded-at dream notes]} state]
-      [rn/View {:style (merge {:paddingTop (.-top insets)}
-                              (s [:absolute-fill]))}
-       [rn/Text {:style (s [:ui0 :f3 :tc :pb3])}
-        "Add Dream"]
-       [r/Revealer {:style (s [:ph2 :pv3])}
-        [rn/Text {:style (s [:ui0 :f4 :pb2])}
-         "Date recorded"]
-        [rn/Text {:style (s [:ui0 :fwb :f5 :pb3])}
-         (format-date recorded-at)]
-        [rn/Text {:style (s [:ui0 :f4 :pb2])}
-         "Dream content"]
-        [rn/View {:style (s [:pb5])}
-         [r/MultilineTextInput
-          {:numberOfLines 10
-           :multiline true
-           :onChangeText (fn [text]
-                           (setState (fn [state]
-                                       (assoc state :content text))))}]]
-        [rn/Text {:style (s [:ui0 :f4 :pb2])}
-         "Dream analysis"]
-        [rn/View {:style (s [:pb5])}
-         [r/MultilineTextInput
-          {:numberOfLines 10
-           :multiline true
-           :onChangeText (fn [text]
-                           (setState (fn [state]
-                                       (assoc state :analysis text))))}]]
-        [rn/View {:style (s [:aic :pb6 :jcc])}
-         [b/TextButton2
-          {:onPress (fn []
-                      (record-dream state)
-                      (.goBack navigation))
-           :text "Save Dream"}]]]
-       [TopRightCloseButtonDark]
-       [HelpButtonOverlay]])))
+    [rn/View {:style (merge {:paddingTop (.-top insets)}
+                            (s [:absolute-fill :bg-brand0]))}
+     [rn/Text {:style (s [:ui1 :f3 :tc :pb3])}
+      "Add Dream"]
+     [DreamForm {:onSubmit (fn [dream]
+                             (record-dream dream)
+                             (.goBack navigation))}]
+     [TopRightCloseButtonLight]
+     [HelpButtonOverlay]]))
+
+(defnc EditDream
+  []
+  (let [insets (useSafeArea)
+        route (useRoute)
+        {:keys [params]} (->clj route)
+        {:keys [dream]} params
+        {:keys [edit-dream diary record-dream]} (react/useContext diary-context)
+        navigation (useNavigation)]
+    [rn/View {:style (merge {:paddingTop (.-top insets)}
+                            (s [:absolute-fill :bg-brand0]))}
+     [rn/Text {:style (s [:ui1 :f3 :tc :pb3])}
+      "Edit Dream"]
+     [DreamForm {:dream dream
+                 :onSubmit (fn [dream]
+                             (edit-dream dream)
+                             (.goBack navigation))}]
+     [TopRightCloseButtonLight]
+     [HelpButtonOverlay]]))
 
 (defnc EmptyState
   []
@@ -140,17 +176,44 @@
    [rn/Text {:style (s [:ui1 :f5 :tc])}
     "Crack out the cocoa, \n it's time for a good old snooze..."]])
 
-(defnc Dream
+(def dream-context
+  (react/createContext))
+
+(defnc DreamActions
   [props]
-  (let [{:keys [recorded-at content analysis]} props]
-    [rn/View
-     [rn/Text {:style (s [:ui1 :f5 :pb2 :fwb])}
-      (format-date recorded-at)]
-     [rn/View {:style (s [:pl2 :pb4])}
-      [rn/Text {:style (s [:ui1 :f5 :pb2])}
-       content]
-      [rn/Text  {:style (s [:ui1 :f5])}
-       analysis]]]))
+  (let [{:keys [dream edit-dream remove-dream]} props]
+    [rn/View {:style (s [:fg1 :fdr :bg-ui1 :jcfe :aic])}
+     [rn/TouchableOpacity {:style (s [:aic :pa2])}
+      [Ionicons {:name "ios-brush"
+                 :size 50
+                 :onPress #(edit-dream dream)
+                 :style (s [:ui0])}]
+      [rn/Text "Edit dream"]]
+     [rn/TouchableOpacity {:style (s [:aic :pa2])
+                           :onPress #(remove-dream dream)}
+      [Ionicons {:name "ios-trash"
+                 :size 50
+                 :style (s [:ui0])}]
+      [rn/Text "Delete dream"]]]))
+
+(defnc Dream
+  [dream]
+  (let [{:keys [recorded-at content analysis]} dream
+        {:keys [remove-dream]} (react/useContext diary-context)
+        navigation (useNavigation)
+        edit-dream (fn [dream]
+                     (.navigate navigation "edit-dream" {:dream dream}))]
+    [Swipeable {:renderRightActions (fn [] (hx/f [DreamActions
+                                                  {:remove-dream remove-dream
+                                                   :edit-dream edit-dream
+                                                   :dream dream}]))}
+     [rn/View {:style (s [:bg-brand0 :btw1 :bbw1 :b-ui1 :pa3])}
+      [rn/Text {:style (s [:ui1 :f5 :pb2 :fwb])}
+       (format-date recorded-at)]
+      [rn/Text {:style (s [:ui1 :f5])
+                :numberOfLines 8}
+       (str content
+            "\n" analysis)]]]))
 
 (defnc DreamsList
   []
@@ -214,7 +277,9 @@
        [Stack.Screen {:name "dream-questions"
                       :component DreamQuestions}]
        [Stack.Screen {:name "add-dream"
-                      :component AddDream}]]]]))
+                      :component AddDream}]
+       [Stack.Screen {:name "edit-dream"
+                      :component EditDream}]]]]))
 
 (defn start
   "Entry point for ui, called every hot reload"
