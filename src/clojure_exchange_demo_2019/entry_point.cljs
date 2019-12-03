@@ -183,10 +183,10 @@
   [props]
   (let [{:keys [dream edit-dream remove-dream]} props]
     [rn/View {:style (s [:fg1 :fdr :bg-ui1 :jcfe :aic])}
-     [rn/TouchableOpacity {:style (s [:aic :pa2])}
+     [rn/TouchableOpacity {:style (s [:aic :pa2])
+                           :onPress #(edit-dream dream)}
       [Ionicons {:name "ios-brush"
                  :size 50
-                 :onPress #(edit-dream dream)
                  :style (s [:ui0])}]
       [rn/Text "Edit dream"]]
      [rn/TouchableOpacity {:style (s [:aic :pa2])
@@ -201,12 +201,15 @@
   (let [{:keys [recorded-at content analysis]} dream
         {:keys [remove-dream]} (react/useContext diary-context)
         navigation (useNavigation)
+        swipeable (react/useRef)
         edit-dream (fn [dream]
-                     (.navigate navigation "edit-dream" {:dream dream}))]
+                     (.navigate navigation "edit-dream" {:dream dream})
+                     (.close (.-current swipeable)))]
     [Swipeable {:renderRightActions (fn [] (hx/f [DreamActions
                                                   {:remove-dream remove-dream
                                                    :edit-dream edit-dream
-                                                   :dream dream}]))}
+                                                   :dream dream}]))
+                :ref swipeable}
      [rn/View {:style (s [:bg-brand0 :btw1 :bbw1 :b-ui1 :pa3])}
       [rn/Text {:style (s [:ui1 :f5 :pb2 :fwb])}
        (format-date recorded-at)]
