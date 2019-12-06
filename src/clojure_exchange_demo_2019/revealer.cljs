@@ -78,7 +78,7 @@
        {:underlineColorAndroid "transparent"
         :autoCorrect false
         :autoCapitalize "none"
-        :style (s [:br1 :ui0 :bg-ui1 :pa2 :f4 :w100])}
+        :style (s [:br1 :ui1 :bg-ui1 :pa2 :f4 :w100])}
        props
        {:ref ref
         :onFocus (fn [e]
@@ -98,7 +98,7 @@
         :multiline true
         :numberOfLines 20
         :autoCapitalize "none"
-        :style (s [:br1 :h10 :ui0 :bg-ui1 :pa2 :f4 :w100])}
+        :style (s [:br1 :h10 :ui1 :bg-brand1 :pa2 :f4 :w100])}
        props
        {:ref ref
         :onFocus (fn [e]

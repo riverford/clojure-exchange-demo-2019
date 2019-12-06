@@ -9,6 +9,7 @@
    [clojure-exchange-demo-2019.async-storage :as async-storage]
    [clojure-exchange-demo-2019.dream-questions :as q]
    [cljs-bean.core :refer [->clj]]
+   ["react-native-gesture-handler" :as gh]
    ["react-native-gesture-handler/Swipeable" :default Swipeable]
    ["date-fns" :as d]
    ["@expo/vector-icons" :refer [Entypo Ionicons]]
@@ -213,15 +214,15 @@
      [rn/View {:style (s [:bg-brand0 :btw1 :bbw1 :b-ui1 :pa3])}
       [rn/Text {:style (s [:ui1 :f5 :pb2 :fwb])}
        (format-date recorded-at)]
-      [rn/Text {:style (s [:ui1 :f5])
-                :numberOfLines 8}
+      [rn/Text (merge {:style (s [:ui1 :f5])
+                       :numberOfLines 6})
        (str content
             "\n" analysis)]]]))
 
 (defnc DreamsList
   []
   (let [{:keys [diary]} (react/useContext diary-context)]
-    [rn/FlatList
+    [gh/FlatList
      {:showsVerticalScrollIndicator false
       :keyExtractor (fn [item]
                       (let [{:keys [recorded-at]} (->clj item)]
